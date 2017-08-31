@@ -1,3 +1,16 @@
 #!/bin/bash
-docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp mono:5 mcs fizzbuzz.cs
-docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp mono:5 mono ./fizzbuzz.exe
+
+CURRENT_DIR=`dirname $0`
+APP_ROOT=${CURRENT_DIR}
+APP_ROOT_ABS=$(cd ${APP_ROOT}; pwd)
+APP_ROOT_INTERNAL=/usr/src/app
+
+DOCKER_IMAGE='mono:5'
+COMMAND_COMPILE='mcs fizzbuzz.cs'
+COMMAND_RUN='mono ./fizzbuzz.exe'
+COMMAND_CLEAN="rm -f ${COMMAND_RUN}"
+COMMAND_DOCKER_RUN="docker run --rm -v ${APP_ROOT_ABS}:${APP_ROOT_INTERNAL} -w ${APP_ROOT_INTERNAL} ${DOCKER_IMAGE}"
+
+${COMMAND_DOCKER_RUN} ${COMMAND_CLEAN}
+${COMMAND_DOCKER_RUN} ${COMMAND_COMPILE}
+${COMMAND_DOCKER_RUN} ${COMMAND_RUN}
